@@ -1,0 +1,18 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[redirects]]
+  from = "/*"
+  to = "/:splat"
+  status = 200
+
+# 环境变量
+[build.environment]
+  NEXT_PUBLIC_SUPABASE_URL = "https://svpkrafmrpckujtndwbm.supabase.co"
+  NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2cGtyYWZtcnBja3VqdG5kd2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMjI2ODIsImV4cCI6MjA5NDg5ODY4Mn0.a_R_G6wa0s8FvQuWWgg8Jy_auip2I-T1tSWkSzlUCHc"
+  AI_PROVIDER = "deepseek"
+  AI_API_KEY = "sk-e5249d9a65334f4ea4813b9c8a388eca"
+  AI_MODEL = "deepseek-chat"
+  SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2cGtyYWZtcnBja3VqdG5kd2JtIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTMyMjY4MiwiZXhwIjoyMDk0ODk4NjgyfQ.RNbLh1koSlDJSttTOtIDvkJf7wvBjqY9h4F6hw8EFlU"
+  NEXT_PUBLIC_APP_NAME = "故事花园"
