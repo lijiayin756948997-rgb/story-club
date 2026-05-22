@@ -16,3 +16,4 @@
   AI_MODEL = "deepseek-chat"
   SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2cGtyYWZtcnBja3VqdG5kd2JtIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTMyMjY4MiwiZXhwIjoyMDk0ODk4NjgyfQ.RNbLh1koSlDJSttTOtIDvkJf7wvBjqY9h4F6hw8EFlU"
   NEXT_PUBLIC_APP_NAME = "故事花园"
+  NEXT_PUBLIC_SITE_URL = "https://story-club.netlify.app"
