@@ -29,6 +29,7 @@ export default function LoginPage() {
       email: email.trim(),
       options: {
         shouldCreateUser: true,
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
     setSending(false);
