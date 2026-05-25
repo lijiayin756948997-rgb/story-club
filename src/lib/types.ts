@@ -23,8 +23,9 @@ export interface Memory {
   id: string;
   circle_id: string;
   author_id: string;
+  author_email?: string | null;
   content: string;
-  happened_at: string; // date string
+  happened_at: string;
   tags: string[];
   created_at: string;
   updated_at: string;
@@ -40,6 +41,7 @@ export interface Story {
   memory_count: number;
   style: string | null;
   character_ids: string[] | null;
+  creator_email?: string | null;
   created_at: string;
 }
 

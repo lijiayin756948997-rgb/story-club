@@ -13,11 +13,12 @@ interface MemoryCardProps {
 }
 
 export function MemoryCard({ memory, selected, onToggle, showActions, onDelete }: MemoryCardProps) {
+  const timeAgo = getTimeAgo(new Date(memory.created_at));
+
   return (
     <Card className={`hover:shadow-md transition-shadow ${selected ? "ring-2 ring-primary-500 border-primary-500 bg-primary-50/30" : ""}`}>
       <CardContent className="py-3 px-4">
         <div className="flex items-start gap-3">
-          {/* 勾选框 */}
           {onToggle && (
             <button
               onClick={() => onToggle(memory.id)}
@@ -36,6 +37,11 @@ export function MemoryCard({ memory, selected, onToggle, showActions, onDelete }
           )}
 
           <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1 text-xs text-gray-400">
+              <span>{memory.author_email?.split("@")[0] || "成员"}</span>
+              <span>·</span>
+              <span>{timeAgo}</span>
+            </div>
             <p className="text-gray-800 leading-relaxed whitespace-pre-wrap text-sm">{memory.content}</p>
             {memory.tags && memory.tags.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
@@ -61,4 +67,16 @@ export function MemoryCard({ memory, selected, onToggle, showActions, onDelete }
       </CardContent>
     </Card>
   );
+}
+
+function getTimeAgo(date: Date): string {
+  const diff = Date.now() - date.getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "刚刚";
+  if (mins < 60) return `${mins}分钟前`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}小时前`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}天前`;
+  return date.toLocaleDateString("zh-CN");
 }

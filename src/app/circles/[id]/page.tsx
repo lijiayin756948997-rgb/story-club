@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { CircleTimeline } from "./circle-timeline";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default async function CirclePage({ params }: { params: { id: string } }) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();

@@ -38,6 +38,8 @@ export default async function StoryPage({
         content={story.content}
         memoryCount={story.memory_count}
         style={story.style}
+        creatorEmail={story.creator_email}
+        createdAt={story.created_at}
       />
       <div className="text-center mt-6">
         <a

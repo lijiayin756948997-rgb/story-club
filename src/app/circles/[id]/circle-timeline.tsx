@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { MemoryForm } from "@/components/memory-form";
 import { Timeline } from "@/components/timeline";
+import { ActivityLog } from "@/components/activity-log";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { logActivity } from "@/lib/activity-log";
 import type { Circle, Memory, Character } from "@/lib/types";
 
 const STYLE_OPTIONS = [
@@ -38,12 +40,59 @@ export function CircleTimeline({ circle, memories: initialMemories, characters, 
   // 确保 characters 是数组
   const characterList = Array.isArray(characters) ? characters : [];
 
+  // 实时监听其他成员添加/删除记忆
+  useEffect(() => {
+    const channel = supabase
+      .channel("memories-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "memories",
+          filter: `circle_id=eq.${circle.id}`,
+        },
+        (payload) => {
+          const newMemory = payload.new as Memory;
+          setMemoryList((prev) => {
+            if (prev.some((m) => m.id === newMemory.id)) return prev;
+            return [newMemory, ...prev];
+          });
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "memories",
+          filter: `circle_id=eq.${circle.id}`,
+        },
+        (payload) => {
+          const deletedId = payload.old.id;
+          setMemoryList((prev) => prev.filter((m) => m.id !== deletedId));
+          setSelectedIds((prev) => {
+            const next = new Set(prev);
+            next.delete(deletedId);
+            return next;
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [circle.id]);
+
   const handleAddMemory = async (data: { content: string; tags: string[] }) => {
+    const { data: { user } } = await supabase.auth.getUser();
     const { data: memory, error } = await supabase
       .from("memories")
       .insert({
         circle_id: circle.id,
         author_id: userId,
+        author_email: user?.email || null,
         content: data.content,
         happened_at: new Date().toISOString().split("T")[0],
         tags: data.tags,
@@ -54,6 +103,7 @@ export function CircleTimeline({ circle, memories: initialMemories, characters, 
     if (error) throw new Error(error.message);
     setMemoryList((prev: Memory[]) => [memory, ...prev]);
     setShowForm(false);
+    logActivity(circle.id, "memory_added", "添加了一条记忆");
   };
 
   const handleDeleteMemory = async (id: string) => {
@@ -64,6 +114,7 @@ export function CircleTimeline({ circle, memories: initialMemories, characters, 
       next.delete(id);
       return next;
     });
+    logActivity(circle.id, "memory_deleted", "删除了一条记忆");
   };
 
   const toggleSelect = (id: string) => {
@@ -109,6 +160,7 @@ export function CircleTimeline({ circle, memories: initialMemories, characters, 
 
       const { storyId } = await res.json();
       setSelectedIds(new Set());
+      logActivity(circle.id, "story_generated", "生成了一篇故事");
       router.push(`/circles/${circle.id}/stories/${storyId}`);
     } catch (err: any) {
       setGenerateError(err.message || "生成失败，请检查 API Key 配置");
@@ -181,7 +233,10 @@ export function CircleTimeline({ circle, memories: initialMemories, characters, 
           {/* 人物信息 */}
           {characterList.length > 0 && (
             <div className="mt-2 text-xs text-gray-400">
-              人物设定：{characterList.map((c) => c.avatar_emoji + c.name).join("、")}
+              {characterList.map((c) => c.avatar_emoji + c.name).join("、")}
+              {selectedIds.size > 0 && (
+                <span> · 选中记忆里涉及的人物会自动匹配</span>
+              )}
             </div>
           )}
           {generateError && <p className="text-sm text-red-600 mt-2">{generateError}</p>}
@@ -197,6 +252,7 @@ export function CircleTimeline({ circle, memories: initialMemories, characters, 
         onToggleSelect={toggleSelect}
         onDeleteMemory={handleDeleteMemory}
       />
+      <ActivityLog circleId={circle.id} />
     </div>
   );
 }

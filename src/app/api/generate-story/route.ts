@@ -74,6 +74,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "未找到选中的记忆" }, { status: 400 });
     }
 
+    // 只保留选中记忆里出现的人物
+    const memoryText = memories.map((m: any) => m.content).join(" ");
+    const relevantChars = (characters || []).filter((c: any) =>
+      c.name && memoryText.includes(c.name)
+    );
+
     // 组装记忆文本
     const memoryEntries = memories
       .map((m: any, i: number) => {
@@ -82,11 +88,11 @@ export async function POST(request: Request) {
       })
       .join("\n\n---\n\n");
 
-    // 人物设定
+    // 人物设定（只传关联的人物）
     let characterContext = "";
-    if (characters && characters.length > 0) {
+    if (relevantChars.length > 0) {
       characterContext = "\n\n## 人物设定\n\n故事中涉及以下人物，请在写作时参考：\n";
-      characters.forEach((c: any) => {
+      relevantChars.forEach((c: any) => {
         characterContext += `- ${c.emoji || "👤"} ${c.name}`;
         if (c.description) characterContext += `：${c.description}`;
         if (c.personality) characterContext += `（${c.personality}）`;
@@ -172,6 +178,7 @@ ${memoryEntries}
         memory_count: memories.length,
         style: styleConfig.label,
         character_ids: [],
+        creator_email: user.email || null,
       })
       .select()
       .single();

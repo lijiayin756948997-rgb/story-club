@@ -141,6 +141,12 @@ ${memoryText}`;
       if (!insertError) {
         created++;
         existingNames.add(char.name);
+        await supabase.from("activity_logs").insert({
+          circle_id: circleId,
+          user_id: user.id,
+          action: "character_added",
+          description: `从记忆中识别出人物「${char.name}」`,
+        }).catch(() => {});
       }
     }
 

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { CreateCircleButton } from "./create-circle-button";
 
+export const dynamic = "force-dynamic";
+
 export default async function CirclesPage() {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -108,6 +110,13 @@ function JoinCircleSection() {
             .insert({ circle_id: circle.id, user_id: user.id, role: "member" });
 
           if (!error) {
+            // 记录日志
+            await supabase.from("activity_logs").insert({
+              circle_id: circle.id,
+              user_id: user.id,
+              action: "member_joined",
+              description: "加入了圈子",
+            });
             redirect(`/circles/${circle.id}`);
           }
         }}

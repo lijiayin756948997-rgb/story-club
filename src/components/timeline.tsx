@@ -145,7 +145,7 @@ export function Timeline({ memories, characters, currentUserId, selectedIds, onT
             memory={memory}
             selected={selectedIds.has(memory.id)}
             onToggle={onToggleSelect}
-            showActions={memory.author_id === currentUserId}
+            showActions={true}
             onDelete={onDeleteMemory ? (id) => onDeleteMemory(id) : undefined}
           />
         ))}

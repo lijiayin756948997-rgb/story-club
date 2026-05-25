@@ -72,11 +72,11 @@ export default async function StoriesPage({ params }: { params: { id: string } }
                         基于 {story.memory_count} 条选中的记忆
                         {story.style && <span className="ml-1.5 text-xs text-primary-600 bg-primary-50 px-1.5 py-0.5 rounded">{story.style}</span>}
                       </p>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        {story.creator_email?.split("@")[0] || "成员"} · {new Date(story.created_at).toLocaleDateString("zh-CN")}
+                      </p>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className="text-xs text-gray-400">
-                        {new Date(story.created_at).toLocaleDateString("zh-CN")}
-                      </span>
                       <DeleteStoryButton storyId={story.id} circleId={params.id} />
                     </div>
                   </div>

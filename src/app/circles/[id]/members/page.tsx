@@ -4,6 +4,9 @@ import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { CopyButton } from "@/components/copy-button";
 
+// 每次访问都重新获取数据
+export const dynamic = "force-dynamic";
+
 export default async function MembersPage({ params }: { params: { id: string } }) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
